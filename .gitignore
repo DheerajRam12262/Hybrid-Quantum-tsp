@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+*.so
+*.dylib
+.pytest_cache/
+.venv/
+venv/
+.env
+.DS_Store
+
+# Benchmark outputs
+benchmarks/results/*
+!benchmarks/results/.gitkeep
+
+# Jupyter
+.ipynb_checkpoints/

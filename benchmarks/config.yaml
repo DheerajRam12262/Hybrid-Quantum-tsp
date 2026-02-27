@@ -1,0 +1,16 @@
+benchmark:
+  sizes: [5, 8, 10, 12, 15, 20, 25]
+  trials: 5
+  time_budget_s: 0.25
+  max_exact_cities: 12
+
+solvers:
+  simulated_annealing:
+    initial_temp: 10000.0
+    cooling_rate: 0.9995
+
+  hybrid_qaoa:
+    reps: 2
+    n_chains: 8
+    initial_temp: 8000.0
+    cooling_rate: 0.99935

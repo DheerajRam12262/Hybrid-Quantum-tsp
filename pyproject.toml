@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qaoa-tsp-benchmark"
+version = "0.1.0"
+description = "Fixed-budget SA vs hybrid QAOA-style benchmark for TSP (with trend analysis)."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "Project Team" }]
+license = { text = "MIT" }
+dependencies = [
+  "numpy>=1.26.0",
+  "scipy>=1.11.0",
+  "pandas>=2.1.0",
+  "matplotlib>=3.8.0",
+  "plotly>=5.18.0",
+  "networkx>=3.2.0",
+  "PyYAML>=6.0.1"
+]
+
+[project.optional-dependencies]
+quantum = [
+  "qiskit>=0.45.0",
+  "qiskit-aer>=0.13.0",
+  "qiskit-algorithms>=0.3.0",
+  "qiskit-optimization>=0.6.0",
+  "pennylane>=0.35.0",
+  "qiskit-ibm-runtime>=0.17.0"
+]
+annealer = [
+  "dwave-ocean-sdk>=6.8.0"
+]
+classical_plus = [
+  "ortools>=9.7.0"
+]
+dev = [
+  "pytest>=8.0.0"
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+addopts = "-q"
+
+[project.scripts]
+qaoa-problem-gen = "qaoa_tsp_benchmark.problem_generator:main"
+qaoa-sa = "qaoa_tsp_benchmark.classical.simulated_annealing:main"
+qaoa-qubo-encode = "qaoa_tsp_benchmark.quantum.qubo_encoder:main"
+qaoa-hybrid = "qaoa_tsp_benchmark.quantum.hybrid_optimizer:main"

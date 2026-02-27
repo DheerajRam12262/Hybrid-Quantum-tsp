@@ -1,0 +1,23 @@
+# Core runtime
+numpy>=1.26.0
+scipy>=1.11.0
+pandas>=2.1.0
+matplotlib>=3.8.0
+plotly>=5.18.0
+networkx>=3.2.0
+PyYAML>=6.0.1
+
+# Testing
+pytest>=8.0.0
+
+# Optional quantum stack
+qiskit>=0.45.0
+qiskit-aer>=0.13.0
+qiskit-algorithms>=0.3.0
+qiskit-optimization>=0.6.0
+pennylane>=0.35.0
+qiskit-ibm-runtime>=0.17.0
+
+# Optional annealer comparison
+dwave-ocean-sdk>=6.8.0
+ortools>=9.7.0
