@@ -4,7 +4,7 @@ Hybrid-vs-classical benchmark for TSP under a **matched per-solver wall-clock bu
 
 Project moto:
 
-> Hybrid beats a simple classical baseline under the same time budget on small graphs, and you show the trend.
+> Hybrid beats a simple classical baseline under the same time budget on small graphs.
 
 ## What This Repository Demonstrates
 
