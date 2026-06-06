@@ -5,7 +5,7 @@ from pathlib import Path
 
 import numpy as np
 
-from ..utils import load_instance
+from ..problems.tsp import load_instance
 
 
 def _index(city: int, position: int, n_cities: int) -> int:
@@ -85,6 +85,43 @@ def qubo_energy(bitstring: np.ndarray, qubo: np.ndarray, offset: float = 0.0) ->
     return float(x @ qubo @ x + offset)
 
 
+def qubo_to_ising(
+    qubo: np.ndarray,
+    offset: float = 0.0,
+) -> tuple[np.ndarray, np.ndarray, float]:
+    r"""Convert a symmetric QUBO to its equivalent Ising model.
+
+    Minimising ``x^T Q x + offset`` over ``x in {0, 1}^n`` is equivalent to
+    minimising ``const + sum_i h_i z_i + sum_{i<j} J_ij z_i z_j`` over spins
+    ``z in {-1, +1}^n`` under the substitution ``x_i = (1 - z_i) / 2``.
+
+    Working through the algebra for a *symmetric* ``Q`` gives:
+
+    * ``h_i   = -1/2 * row_sum_i``      (row_sum_i = sum_j Q_ij)
+    * ``J_ij  =  1/2 * Q_ij``           (for i < j; J is upper-triangular)
+    * ``const = offset + 1/4 * sum(Q) + 1/4 * trace(Q)``
+
+    Returns ``(h, J, const)`` where ``h`` is length ``n``, ``J`` is an
+    upper-triangular ``n x n`` matrix, and ``const`` is the scalar shift. The
+    round-trip is verified against :func:`qubo_energy` in the test suite.
+    """
+    Q = np.asarray(qubo, dtype=float)
+    if Q.ndim != 2 or Q.shape[0] != Q.shape[1]:
+        raise ValueError("qubo must be a square matrix")
+
+    row_sums = Q.sum(axis=1)
+    h = -0.5 * row_sums
+    J = 0.5 * np.triu(Q, k=1)
+    const = float(offset + 0.25 * Q.sum() + 0.25 * np.trace(Q))
+    return h, J, const
+
+
+def ising_energy(spins: np.ndarray, h: np.ndarray, J: np.ndarray, const: float = 0.0) -> float:
+    r"""Energy of a spin configuration under ``const + h.z + sum_{i<j} J_ij z_i z_j``."""
+    z = np.asarray(spins, dtype=float)
+    return float(const + h @ z + z @ np.triu(J, k=1) @ z)
+
+
 def save_qubo(
     output_path: str | Path,
     qubo: np.ndarray,
@@ -94,13 +131,14 @@ def save_qubo(
 ) -> None:
     path = Path(output_path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    np.savez_compressed(
-        path,
-        qubo=qubo,
-        offset=np.array([offset], dtype=float),
-        distance_matrix=distance_matrix,
+    arrays: dict[str, np.ndarray] = {
+        "qubo": qubo,
+        "offset": np.array([offset], dtype=float),
+        "distance_matrix": distance_matrix,
         **{k: np.array([v], dtype=float) for k, v in meta.items()},
-    )
+    }
+    # mypy can't prove the **kwargs keys avoid savez's `allow_pickle` bool param.
+    np.savez_compressed(path, **arrays)  # type: ignore[arg-type]
 
 
 def parse_args() -> argparse.Namespace:
@@ -122,7 +160,9 @@ def main() -> None:
     )
     save_qubo(args.output, qubo, offset, instance.distance_matrix, meta)
     print(f"Saved QUBO ({qubo.shape[0]} vars) to {args.output}")
-    print(f"penalty_a={meta['penalty_a']:.3f}, penalty_b={meta['penalty_b']:.3f}, offset={offset:.3f}")
+    print(
+        f"penalty_a={meta['penalty_a']:.3f}, penalty_b={meta['penalty_b']:.3f}, offset={offset:.3f}"
+    )
 
 
 if __name__ == "__main__":

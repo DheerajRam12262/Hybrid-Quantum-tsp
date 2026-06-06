@@ -2,11 +2,16 @@ from __future__ import annotations
 
 import numpy as np
 
-from qaoa_tsp_benchmark.classical.simulated_annealing import (
+from quantum_classical_benchmark.problems.tsp import (
+    generate_euclidean_instance,
+    is_valid_tour,
+    random_tour,
+    tour_cost,
+)
+from quantum_classical_benchmark.solvers.simulated_annealing import (
     SimulatedAnnealingConfig,
     SimulatedAnnealingSolver,
 )
-from qaoa_tsp_benchmark.utils import generate_euclidean_instance, is_valid_tour, random_tour, tour_cost
 
 
 def test_sa_returns_valid_tour_and_improves_random() -> None:

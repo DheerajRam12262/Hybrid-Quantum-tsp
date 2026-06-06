@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import itertools
-from functools import lru_cache
+from functools import cache
 
 import numpy as np
 
@@ -14,7 +14,7 @@ def held_karp_tsp(distance_matrix: np.ndarray, start: int = 0) -> tuple[float, t
 
     cities = tuple(i for i in range(n) if i != start)
 
-    @lru_cache(maxsize=None)
+    @cache
     def dp(last: int, remaining: frozenset[int]) -> tuple[float, tuple[int, ...]]:
         if not remaining:
             return distance_matrix[last, start], (start,)

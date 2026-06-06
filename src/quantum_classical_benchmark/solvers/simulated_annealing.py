@@ -7,8 +7,8 @@ from dataclasses import dataclass
 
 import numpy as np
 
+from ..problems.tsp import is_valid_tour, load_instance, normalize_tour, random_tour, tour_cost
 from ..types import SolverResult
-from ..utils import is_valid_tour, load_instance, normalize_tour, random_tour, tour_cost
 
 
 @dataclass(slots=True)

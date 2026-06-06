@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 
 import numpy as np
 
-from .types import TSPInstance
+from ..types import TSPInstance
 
 
 def generate_euclidean_instance(n_cities: int, seed: int, scale: float = 100.0) -> TSPInstance:
@@ -44,7 +44,8 @@ def normalize_tour(tour: Iterable[int]) -> tuple[int, ...]:
         route = route[idx0:] + route[:idx0]
 
     reversed_route = [route[0]] + list(reversed(route[1:]))
-    return tuple(min(route, reversed_route))
+    canonical = min(route, reversed_route)
+    return tuple(int(c) for c in canonical)
 
 
 def tour_cost(tour: Iterable[int], distance_matrix: np.ndarray) -> float:

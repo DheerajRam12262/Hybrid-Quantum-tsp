@@ -1,16 +1,33 @@
+# Byte-compiled / build artifacts
 __pycache__/
 *.py[cod]
 *.so
 *.dylib
-.pytest_cache/
+build/
+dist/
+*.egg-info/
+
+# Virtualenvs
 .venv/
 venv/
 .env
+
+# Tooling caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# OS
 .DS_Store
 
-# Benchmark outputs
-benchmarks/results/*
-!benchmarks/results/.gitkeep
+# Generated TSP instances / QUBOs (regenerate with `make data`)
+data/
+*.npz
+
+# Ad-hoc benchmark runs (the canonical, reproducible run lives in results/benchmark/)
+results/run_*/
 
 # Jupyter
 .ipynb_checkpoints/

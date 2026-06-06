@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import argparse
 
-from .utils import generate_euclidean_instance, save_instance
+from .tsp import generate_euclidean_instance, save_instance
 
 
 def parse_args() -> argparse.Namespace:

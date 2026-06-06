@@ -1,15 +1,19 @@
+# Canonical benchmark configuration used by `make repro`.
+# Load with: python benchmarks/run_benchmark.py --config benchmarks/config.yaml
+# Any CLI flag overrides the matching value here.
 benchmark:
   sizes: [5, 8, 10, 12, 15, 20, 25]
   trials: 5
   time_budget_s: 0.25
+  seed: 42
   max_exact_cities: 12
+  include_ortools: true
 
 solvers:
   simulated_annealing:
     initial_temp: 10000.0
     cooling_rate: 0.9995
-
-  hybrid_qaoa:
+  quantum_inspired:
     reps: 2
     n_chains: 8
     initial_temp: 8000.0

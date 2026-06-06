@@ -7,13 +7,13 @@ from pathlib import Path
 
 import numpy as np
 
+from ..problems.tsp import is_valid_tour, load_instance, normalize_tour, random_tour, tour_cost
 from ..types import SolverResult
-from ..utils import is_valid_tour, load_instance, normalize_tour, random_tour, tour_cost
 
 
 @dataclass(slots=True)
-class HybridQAOAConfig:
-    reps: int = 2
+class QuantumInspiredConfig:
+    reps: int = 2  # controls the mixer-schedule period; echoes QAOA's p (see class docstring)
     n_chains: int = 8
     initial_temp: float = 8_000.0
     cooling_rate: float = 0.99935
@@ -22,16 +22,25 @@ class HybridQAOAConfig:
     local_refine_steps: int = 200
 
 
-class HybridQAOASolver:
-    """QAOA-inspired hybrid optimizer under a fixed wall-clock budget.
+class QuantumInspiredSolver:
+    """Quantum-INSPIRED parallel-tempering metaheuristic under a fixed budget.
 
-    The implementation mixes multiple stochastic chains (exploration) with
-    periodic deterministic 2-opt refinement (exploitation), inspired by
-    quantum-classical alternating optimization loops.
+    This is a *classical* algorithm. No quantum hardware or simulator is
+    involved. The design borrows two ideas from quantum optimization:
+
+    * **Parallel tempering** (multiple replicas at a geometric ladder of
+      temperatures) mirrors quantum/thermal annealing's population of states.
+    * An **alternating explore/exploit schedule** -- a sinusoidal ``beta`` that
+      trades global swaps for 2-opt reversals -- echoes QAOA's alternating
+      cost/mixer layers. ``reps`` sets the period of that schedule.
+
+    It is included to test whether a *quantum-inspired* heuristic can rival the
+    strong classical baseline (OR-Tools). The honest finding (see the README)
+    is that it does not; OR-Tools wins on quality at every size tested.
     """
 
-    def __init__(self, config: HybridQAOAConfig | None = None) -> None:
-        self.config = config or HybridQAOAConfig()
+    def __init__(self, config: QuantumInspiredConfig | None = None) -> None:
+        self.config = config or QuantumInspiredConfig()
 
     def solve(self, distance_matrix: np.ndarray, time_budget_s: float, seed: int) -> SolverResult:
         n = distance_matrix.shape[0]
@@ -181,7 +190,9 @@ def _load_distance_from_qubo(path: str | Path) -> np.ndarray:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Run QAOA-inspired hybrid TSP optimizer")
+    parser = argparse.ArgumentParser(
+        description="Run the quantum-inspired (parallel-tempering) TSP optimizer"
+    )
     src = parser.add_mutually_exclusive_group(required=True)
     src.add_argument("--input", type=str, help="TSP instance JSON")
     src.add_argument("--qubo", type=str, help="QUBO .npz output (must include distance matrix)")
@@ -205,7 +216,7 @@ def main() -> None:
     else:
         distance_matrix = _load_distance_from_qubo(args.qubo)
 
-    config = HybridQAOAConfig(
+    config = QuantumInspiredConfig(
         reps=args.reps,
         n_chains=args.n_chains,
         initial_temp=args.initial_temp,
@@ -215,7 +226,7 @@ def main() -> None:
         local_refine_steps=args.local_refine_steps,
     )
 
-    solver = HybridQAOASolver(config)
+    solver = QuantumInspiredSolver(config)
     result = solver.solve(distance_matrix, time_budget_s=args.time_budget, seed=args.seed)
 
     print(f"Best tour: {result.tour}")
