@@ -1,0 +1,15 @@
+{
+  "created_at": "2026-06-06T10:21:34",
+  "baseline_solver": "ortools",
+  "time_budget_s": 0.25,
+  "trials": 5,
+  "ortools_cost_scaling_exponent": 0.4655112369696871,
+  "ortools_runtime_scaling_exponent": -0.0032102742725305666,
+  "quantum_inspired_cost_scaling_exponent": 0.5896263807930064,
+  "quantum_inspired_runtime_scaling_exponent": 0.00021905781427403284,
+  "simulated_annealing_cost_scaling_exponent": 0.5555623504467289,
+  "simulated_annealing_runtime_scaling_exponent": -1.5461635802156245e-06,
+  "ortools_mean_gap_pct_exact": 4.0747696940457716e-15,
+  "quantum_inspired_mean_gap_pct_exact": 1.0075513471059463,
+  "simulated_annealing_mean_gap_pct_exact": 0.6189221899872785
+}
